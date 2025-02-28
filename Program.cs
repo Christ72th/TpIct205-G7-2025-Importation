@@ -23,7 +23,7 @@ var localizationOptions = new RequestLocalizationOptions()
 
 app.UseRequestLocalization(localizationOptions);
 
-
+/*
 // Ajouter des services au conteneur
 builder.Services.AddScoped<EmailService>(provider => new EmailService(
     "smtp.gmail.com",
@@ -31,7 +31,7 @@ builder.Services.AddScoped<EmailService>(provider => new EmailService(
     "ictford1@gmail.com",
     "Acerjetaime1234"
 ));
-
+*/
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
