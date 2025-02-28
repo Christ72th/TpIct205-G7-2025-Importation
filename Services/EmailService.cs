@@ -1,4 +1,4 @@
-public class EmailService
+/*public class EmailService
 {
     private readonly string _smtpServer = "smtp.gmail.com"; // Serveur SMTP de Gmail
     private readonly int _port = 587; // Port pour TLS
@@ -29,4 +29,4 @@ public class EmailService
             }
         }
     }
-}
+}*/
