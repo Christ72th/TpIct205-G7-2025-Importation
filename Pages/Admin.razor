@@ -178,7 +178,7 @@
             string emailContent = $"Le code est : {verificationCode}";
             string subject = "Code de vérification";
             
-            await EmailService.SendEmailAsync(_resetModel.Email, subject, emailContent);
+            //await EmailService.SendEmailAsync(_resetModel.Email, subject, emailContent);
         }
         else
         {
