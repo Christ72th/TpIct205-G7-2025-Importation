@@ -1,0 +1,85 @@
+/*.Navbar{
+    position: absolute;
+    padding: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+.Navbar a{
+    color: black;
+}
+
+.Navbar .logo{
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.Navbar .Navlinks ul{
+    display: flex;
+}
+
+.Navbar .Navlinks ul li{
+    margin: 0 25px;
+}
+
+.Navbar .Navlinks ul li.active a{
+    color: red;
+    font-weight: 600;
+}
+
+.Navbar .Menu-Hamburger{
+    position: absolute;
+    top: 12em;
+    right: 1em;
+    width: 35px;
+    display: none;
+}
+
+
+
+@media  screen and (max-width : 900px) {
+    .Navbar .logo{
+        top: 40px;
+        left: 30px;
+        position: absolute;
+        font-size: 2em;
+        font-weight: bold;
+    }
+    
+    .Navbar{
+        padding: 0;
+    }
+
+    .Navbar .Menu-Hamburger{
+        display: block;
+    }
+    .Navlinks{
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        background-color: rgba(226, 213, 213, 0.329);
+        backdrop-filter: blur(7px);
+        width: 100%;
+        height: 100vh;
+        margin-left: -100%;
+        transition: all 0.5s ease;
+    }
+
+    .Navlinks.mobile-menu{
+        margin-left: 0;
+    }
+
+    .Navlinks ul{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .Navbar .Navlinks ul li{
+        margin: 25px 0;
+    }
+}*/

@@ -1,0 +1,250 @@
+@page "/DeliberationModifAdmin"
+@using Deliberation.Resources
+@using System.Globalization
+@using MySql.Data.MySqlClient
+@using System.Data
+@using Microsoft.AspNetCore.Mvc.Rendering
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Resource> L
+@inject LanguageService LanguageService
+@layout MainLayout
+@inject IJSRuntime JS
+
+<LanguageSwitch />
+<div class="container-2">
+    <div class="container-1">
+        <div class="logo"><img src="logo.png" width="60px" height="60px"></div>
+        <h1>ICTFORD</h1>
+        <div class="logo"><img src="logo.png" width="60px" height="60px"></div>
+    </div>
+    <h6>@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "ICTFORD l'interface de gestion la plus adaptée et la mieux orientée estudiante" : "ICTFORD the most suitable and student-oriented management interface")</h6>
+</div>
+    
+<div class="yellow"></div>
+<div class="red"></div>
+<div class="green"></div>
+    
+<div class="nav">
+    <nav class="Navbar">
+        <div class="Navlinks">
+            <ul>
+                <li class="lien"><a href="/">Home</a></li>
+                <li class="lien"><a href="DeliberationPV">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Déliberation" : "Deliberation")</a></li>
+                <li class="lien"><a href="#">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Correction" : "Correction")</a></li>
+                <li class="lien"><a href="#">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Paramètres": "Parameters")</a></li>
+                <li class="lien"><a href="#">PlanC</a></li>
+            </ul>
+        </div>
+        <img src="img/menuHamburger.png" alt="Menu Hamburger" class="Menu-Hamburger">
+    </nav>
+</div>
+<div class="container">
+    <div class="choixUe">
+        <label for="UE">Choisissez une option :</label>
+        <select id="UE">
+            <option value="1">205</option>
+            <option value="2">201</option>
+            <option value="3">203</option>
+        </select>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Matricule" : "Matricule")</th>
+                <th>@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Nom" : "Name")</th>
+                <th>@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Prenom" : "First Name")</th>
+                <th>Note CC /20</th>
+                <th>Note TP/40</th>
+                <th>Note SN/40</th>
+                <th>Statut</th>
+                <th>MGP</th>
+                <th>Decision</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var etudiant in etudiants)
+            {
+                <tr>
+                    <td class="editable">@etudiant.Matricule</td>
+                    <td class="editable">@etudiant.Nom</td>
+                    <td class="editable">@etudiant.Prenom</td> 
+                    <td class="editable" data-field="NoteCC">@etudiant.NoteCC</td>
+                    <td class="editable" data-field="NoteTP">@etudiant.NoteTP</td>
+                    <td class="editable" data-field="NoteSN">@etudiant.NoteSN</td>
+                    <td class="editable">Paye</td>
+                    <td>@etudiant.MGP</td>
+                    <td>@etudiant.Decision</td>
+                    <td><button @onclick="() => OpenModal(etudiant)">Modifier</button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="editModal" style="display:none;">
+    <div class="modal-content">
+        <span class="close" @onclick="CloseModal">&times;</span>
+        <h2>Modifier les notes</h2>
+        <input type="hidden" @bind="@selectedEtudiant.Matricule" />
+        <div>
+            <label>Nom:</label>
+            <input type="textarea" @bind="@selectedEtudiant.Nom" />
+        </div>
+        <div>
+            <label>Prenom:</label>
+            <input type="textarea" @bind="@selectedEtudiant.Prenom" />
+        </div>
+        <div>
+            <label>Statut:</label>
+            <input type="text" @bind="@selectedEtudiant.Statut" />
+        </div>
+        <div>
+            <label>Note CC:</label>
+            <input type="number" @bind="@selectedEtudiant.NoteCC" />
+        </div>
+        <div>
+            <label>Note TP:</label>
+            <input type="number" @bind="@selectedEtudiant.NoteTP" />
+        </div>
+        <div>
+            <label>Note SN:</label>
+            <input type="number" @bind="@selectedEtudiant.NoteSN" />
+        </div>
+        <button @onclick="SaveChanges">Enregistrer</button>
+    </div>
+</div>
+
+@code {
+    private List<Etudiant> etudiants = new List<Etudiant>();
+    private Etudiant selectedEtudiant = new Etudiant();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("initialiseMenu");
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        LanguageService.CurrentCulture = new CultureInfo("fr-FR");
+        LanguageService.LanguageChanged += StateHasChanged;
+        etudiants = RemplirEtudiant();
+    }
+
+    private void OpenModal(Etudiant etudiant)
+    {
+        selectedEtudiant = etudiant;
+        JS.InvokeVoidAsync("showModal", "editModal");
+    }
+
+    private void CloseModal()
+    {
+        JS.InvokeVoidAsync("hideModal", "editModal");
+    }
+
+    private void SaveChanges()
+    {
+        // Enregistrer les notes CC, TP, SN séparément
+        UpsertEtudiant(selectedEtudiant, 1, selectedEtudiant.NoteCC); // Pour CC
+        UpsertEtudiant(selectedEtudiant, 2, selectedEtudiant.NoteTP); // Pour TP
+        UpsertEtudiant(selectedEtudiant, 3, selectedEtudiant.NoteSN); // Pour SN
+        CloseModal();
+        StateHasChanged(); // Rafraîchir l'interface
+    }
+
+    private void UpsertEtudiant(Etudiant etudiant, int idEval, double valeur)
+    {
+        string connexionInfo = "server=localhost;database=bonita;user=root;password='';";
+        using (MySqlConnection conn = new MySqlConnection(connexionInfo))
+        {
+            conn.Open();
+            string commandText = @"START TRANSACTION;
+                                    INSERT INTO note (valeur, IdUe, IdEval, Matricule) 
+                                        VALUES (@valeur, @IdUe, @IdEval, @Matricule)
+                                        ON DUPLICATE KEY UPDATE valeur = @valeur;
+                                    UPDATE users 
+                                        SET Firstname=@Nom,Lastname=@Prenom
+                                        WHERE username = @matricule;
+                                    COMMIT;";
+
+            using (MySqlCommand command = new MySqlCommand(commandText, conn))
+            {
+                command.Parameters.AddWithValue("@valeur", valeur);
+                command.Parameters.AddWithValue("@IdUe", 1); // Remplacez par la bonne valeur si nécessaire
+                command.Parameters.AddWithValue("@IdEval", idEval);
+                command.Parameters.AddWithValue("@Matricule", etudiant.Matricule);
+                command.Parameters.AddWithValue("@Nom", etudiant.Nom);
+                command.Parameters.AddWithValue("@Prenom", etudiant.Prenom);
+
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+
+    private List<Etudiant> RemplirEtudiant()
+    {
+        string connexionInfo = "server=localhost;database=bonita;user=root;password='';";
+        using (MySqlConnection conn = new MySqlConnection(connexionInfo))
+        {
+            conn.Open();
+            string commandText = @"SELECT 
+            e.Matricule, 
+            e.Nom, 
+            e.Prenom,
+            MAX(CASE WHEN n.rn = 1 THEN n.valeur END) AS Note1,
+            MAX(CASE WHEN n.rn = 2 THEN n.valeur END) AS Note2,
+            MAX(CASE WHEN n.rn = 3 THEN n.valeur END) AS Note3
+            FROM 
+                etudiant e
+            LEFT JOIN 
+                (SELECT 
+                    Matricule, 
+                    valeur, 
+                    (SELECT COUNT(*) 
+                    FROM note n2 
+                    WHERE n2.Matricule = n1.Matricule AND n2.IdEval <= n1.IdEval) AS rn
+                FROM 
+                    note n1 
+                WHERE 
+                    IdUe = 1) AS n ON e.Matricule = n.Matricule 
+            GROUP BY 
+                e.Matricule, e.Nom, e.Prenom;";
+
+            using (MySqlCommand command = new MySqlCommand(commandText, conn))
+            {
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    List<Etudiant> listeEtudiants = new List<Etudiant>();
+                    while (reader.Read())
+                    {
+                        double note1 = reader["Note1"] != DBNull.Value ? Convert.ToDouble(reader["Note1"]) : 0;
+                        double note2 = reader["Note2"] != DBNull.Value ? Convert.ToDouble(reader["Note2"]) : 0;
+                        double note3 = reader["Note3"] != DBNull.Value ? Convert.ToDouble(reader["Note3"]) : 0;
+
+                        double mgp = (note1 + note2 + note3) / 25;
+
+                        var etudiant = new Etudiant
+                        {
+                            Matricule = reader["Matricule"].ToString(),
+                            Nom = reader["Nom"].ToString(),
+                            Prenom = reader["Prenom"].ToString(),
+                            NoteCC = note1,
+                            NoteTP = note2,
+                            NoteSN = note3,
+                            MGP = mgp
+                        };
+
+                        etudiant.Decision = mgp >= 2 ? "Admis" : "Echec";
+
+                        listeEtudiants.Add(etudiant);
+                    }
+                    return listeEtudiants;
+                }
+            }
+        }
+    }
+}

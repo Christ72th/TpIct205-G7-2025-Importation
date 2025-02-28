@@ -1,0 +1,27 @@
+@using System.Globalization
+@using Deliberation.Services
+@inject LanguageService LanguageService
+
+<div class="language-switch">
+    <button class="language-btn" @onclick="@ToggleLanguage">
+        @(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "English" : "Français")
+    </button>
+</div>
+
+@code {
+    private void ToggleLanguage()
+    {
+        LanguageService.ToggleLanguage();
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        LanguageService.LanguageChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        LanguageService.LanguageChanged -= StateHasChanged;
+    }
+}

@@ -1,0 +1,514 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+
+html, body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+label{
+    color: black;
+}
+
+body {
+    background-color: #2B4C8C;
+    color: white;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+
+
+
+.main-title {
+    color: white;
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 2.5em;
+    margin-top: 50px;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    padding: 20px;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    text-decoration: none;
+    color: white;
+    transition: transform 0.3s ease;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    /*width: 60em;
+    height: 25em;
+    font-size: 1em;*/
+}
+
+
+.container-1 {
+    color: black;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0%;
+    margin: 0%;
+    padding-bottom: 50px;
+}
+
+.container-2{
+    background-image: linear-gradient(45deg,#ffffff, #1787f0,#ffffff);
+    text-align: center;
+    padding-top: 10px;
+}
+h6{
+    margin-top: 10px;
+    margin-left: 20%;
+    margin-right: 20%;
+    display: block;
+}
+
+.container-1 h1{
+    font-family: "christmas blood";
+
+}
+
+.logo {
+    background-color: white;
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: translateY(-10px);
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+    color: white;
+}
+
+.card p {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9em;
+}
+
+.language-switch {
+    position: absolute;
+    top: 5em;
+    left: 20px;
+}
+
+.btn-block{
+    display: flex;
+    flex-direction: row-reverse;
+    position: absolute;
+    top: 5px;
+    top: 9.3%;
+    right: 0.6%;
+}
+
+.btn {
+    padding: 8px 20px;
+    background: rgba(200, 229, 243, 0.767);
+    border: none;
+    color: black;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background 0.3s ease;
+    
+
+}
+.btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.language-btn {
+    padding: 8px 20px;
+    background: rgba(255, 255, 255, 0.767);
+    border: none;
+    color: black;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background 0.3s ease;
+}
+
+.language-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.form-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    width: 100%;
+    max-width: 400px;
+    margin: 50px auto;
+}
+
+.form-title {
+    text-align: center;
+    margin-bottom: 30px;
+    color: black;
+    font-size: 1.8em;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: black;
+    font-size: 0.9em;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: black;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.form-group select option {
+    background: #2B4C8C;
+    color: black;
+}
+
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    border-radius: 10px;
+    color: black;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 20px;
+}
+
+.submit-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.switch-form {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.switch-form a {
+    color: black;
+    text-decoration: none;
+    opacity: 0.8;
+    font-size: 0.9em;
+    display: block;
+    margin: 5px 0;
+}
+
+.switch-form a:hover {
+    opacity: 1;
+}
+
+.validation-message {
+    color: #ff6b6b;
+    font-size: 0.8em;
+    margin-top: 5px;
+}
+
+#blazor-error-ui {
+    display: none;
+}
+
+.green{
+    background-color: green;
+    position: relative;
+    left: 10px;
+    top: -10px;
+    width: 20px;
+    height: 20px;
+}
+.red{
+    background-color: red;
+    position: relative;
+    left: 20px;
+    width: 20px;
+    height: 20px;
+}
+.yellow{
+    background-color: yellow;
+    position: relative;
+    top: 15px;
+    left: 5px;
+    width: 20px;
+    height: 20px;
+}
+
+article{
+    position: absolute;
+    left: 10px;
+    background-color: white;
+    color: black;
+    height: 100%;
+    margin: 0;
+    padding-left: 10px;
+    width: 30%;
+}
+
+.image{
+    position: absolute;
+    width: 40%;
+    height: 40%;
+    right: 10px;
+    background-image: linear-gradient(45deg,#ffffff, #1787f0,#ffffff);
+    margin-top: 10em;
+}
+.carousel-item img{
+    width: 100%;
+}
+
+.carousel-inner{
+    padding: 15px;
+}
+
+.nav{
+    /*width: 100vw;
+    height: 50vh;*/
+    background-size: cover;
+   /* margin: -255px 0;*/
+    position: relative;
+    top: -15em;
+    z-index: 10;
+    width: 100%;
+}
+
+.Navbar{
+    position: absolute;
+    padding: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+.Navbar a{
+    color: black;
+}
+
+.Navbar .logo{
+    font-size: 2em;
+    font-weight: bold;
+}
+
+.Navbar .Navlinks{
+    position: absolute;
+    top: 12em;
+    right: 1em;
+}
+
+.Navbar .Navlinks ul{
+    display: flex;
+}
+
+.Navbar .Navlinks ul li{
+    margin: 0 25px;
+}
+
+.lien{
+    background-color: #f8f8f8;
+    font-size: 15px;
+}
+
+.Navbar .Navlinks ul li.active a{
+    color: rgba(11, 7, 243, 0.74);
+    font-weight: 600;
+    background-color: #0c9de0bb;
+    backdrop-filter: blur(5px);
+}
+.Navbar .Navlinks ul li a :hover{
+    transition: all 0.5s ease;
+    backdrop-filter: blur(5px);
+}
+
+.Navbar .Menu-Hamburger{
+    position: absolute;
+    top: 
+    12em;
+    right: 1em;
+    width: 35px;
+    display: none;
+}
+
+
+
+@media  screen and (max-width : 900px) {
+    .Navbar .logo{
+        top: 40px;
+        left: 30px;
+        position: absolute;
+        font-size: 2em;
+        font-weight: bold;
+    }
+    
+    .Navbar{
+        padding: 0;
+    }
+
+    .Navbar .Menu-Hamburger{
+        display: block;
+    }
+    .Navlinks{
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        background-color: rgba(226, 213, 213, 0.329);
+        backdrop-filter: blur(7px);
+        width: 100%;
+        height: 100vh;
+        margin-left: -100%;
+        transition: all 0.5s ease;
+    }
+
+    .Navlinks.mobile-menu{
+        margin-left: 0;
+    }
+
+    .Navlinks ul{
+        display: flex;
+        flex-direction: column;
+    }
+
+    .Navbar .Navlinks ul li{
+        margin: 25px 0;
+    }
+}
+
+.choixUe{
+    
+    color: black;
+}
+
+table{
+    width: 100%;
+    border-collapse: separate;
+}
+
+thead{
+    background-color: rgba(175, 212, 245, 0.87);
+    border: solid 1px black;
+    color: black;
+}
+
+tr{
+    border: solid 1px black;
+}
+
+td{
+    border: solid 1px black;
+    color: rgba(255, 255, 255, 0.822);
+}
+
+th{
+    border: solid 1px black;
+}
+
+
+.popup {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.popup-content {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    width: 300px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+input[type="number"] {
+    width: 100%; 
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #4CAF50; 
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #45a049; 
+}
+
+.editable{
+    background-color: #0f1d3a;
+}

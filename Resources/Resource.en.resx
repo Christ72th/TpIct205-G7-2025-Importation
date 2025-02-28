@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Welcome" xml:space="preserve">
+    <value>Welcome to Educational Portal</value>
+  </data>
+  <data name="Teacher" xml:space="preserve">
+    <value>Teacher</value>
+  </data>
+  <data name="Student" xml:space="preserve">
+    <value>Student</value>
+  </data>
+  <data name="Administrator" xml:space="preserve">
+    <value>Administrator</value>
+  </data>
+  <data name="TeacherArea" xml:space="preserve">
+    <value>Teacher's area</value>
+  </data>
+  <data name="StudentArea" xml:space="preserve">
+    <value>Student's area</value>
+  </data>
+  <data name="AdminArea" xml:space="preserve">
+    <value>Administrator's area</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Register</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>First Name</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Last Name</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="RegistrationNumber" xml:space="preserve">
+    <value>Registration Number</value>
+  </data>
+  <data name="Level" xml:space="preserve">
+    <value>Level</value>
+  </data>
+  <data name="SelectLevel" xml:space="preserve">
+    <value>--Select a level--</value>
+  </data>
+  <data name="BirthDate" xml:space="preserve">
+    <value>Birth Date</value>
+  </data>
+  <data name="Address" xml:space="preserve">
+    <value>Address</value>
+  </data>
+  <data name="TeachingUnit" xml:space="preserve">
+    <value>Teaching Unit</value>
+  </data>
+  <data name="AccessCode" xml:space="preserve">
+    <value>Access Code</value>
+  </data>
+  <data name="PhoneNumber" xml:space="preserve">
+    <value>Phone Number</value>
+  </data>
+  <data name="ForgotCode" xml:space="preserve">
+    <value>Forgot your code?</value>
+  </data>
+  <data name="NotRegistered" xml:space="preserve">
+    <value>Not registered? Sign up</value>
+  </data>
+  <data name="AlreadyRegistered" xml:space="preserve">
+    <value>Already registered? Login</value>
+  </data>
+  <data name="ResetCode" xml:space="preserve">
+    <value>Code Reset</value>
+  </data>
+  <data name="VerificationCode" xml:space="preserve">
+    <value>Verification Code</value>
+  </data>
+  <data name="EnterVerificationCode" xml:space="preserve">
+    <value>Enter the 6-digit code sent to your email</value>
+  </data>
+  <data name="NewPersonalCode" xml:space="preserve">
+    <value>New personal code (5 digits)</value>
+  </data>
+  <data name="SendVerificationCode" xml:space="preserve">
+    <value>Send verification code</value>
+  </data>
+  <data name="BackToLogin" xml:space="preserve">
+    <value>Back to login</value>
+  </data>
+  <data name="CodeSent" xml:space="preserve">
+    <value>A verification code has been sent to your email.</value>
+  </data>
+  <data name="CodeUpdated" xml:space="preserve">
+    <value>Your code has been successfully updated.</value>
+  </data>
+  <data name="Validate" xml:space="preserve">
+    <value>Validate</value>
+  </data>
+</root>

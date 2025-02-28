@@ -1,0 +1,269 @@
+@page "/teacher"
+@using System.ComponentModel.DataAnnotations
+@using Deliberation.Models
+@using Deliberation.Services
+@using Deliberation.Resources
+@using MySql.Data.MySqlClient
+@using System.Data
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Resource> L
+@inject LanguageService LanguageService
+@using System.Globalization
+
+<LanguageSwitch />
+
+<div class="container">
+    @if (_currentForm == "login")
+    {
+        <div class="form-container">
+            <h2 class="form-title">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Connexion Enseignant" : "Teacher Login")</h2>
+            <EditForm Model="@_loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <InputText id="username" @bind-Value="_loginModel.Username" />
+                    <ValidationMessage For="@(() => _loginModel.Username)" />
+                </div>
+                <div class="form-group">
+                    <label for="password">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Mot de passe" : "Password")</label>
+                    <InputText id="password" type="password" @bind-Value="_loginModel.Password" />
+                    <ValidationMessage For="@(() => _loginModel.Password)" />
+                </div>
+                <button type="submit" class="submit-btn">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Se connecter" : "Login")</button>
+                <div class="switch-form">
+                    <a href="#" @onclick="ShowRegisterForm" @onclick:preventDefault>
+                        @(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Pas encore inscrit ? S'inscrire" : "Not registered yet? Sign up")
+                    </a>
+                    <a href="#" @onclick="ShowResetForm" @onclick:preventDefault>
+                        @(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Code oublié ?" : "Forgot code?")
+                    </a>
+                </div>
+            </EditForm>
+        </div>
+    }
+    else if (_currentForm == "register")
+    {
+        <div class="form-container">
+            <h2 class="form-title">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Inscription Enseignant" : "Teacher Registration")</h2>
+            <EditForm Model="@_registerModel" OnValidSubmit="HandleRegister">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label for="firstName">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Prénom" : "First Name")</label>
+                    <InputText id="firstName" @bind-Value="_registerModel.FirstName" />
+                    <ValidationMessage For="@(() => _registerModel.FirstName)" />
+                </div>
+                <div class="form-group">
+                    <label for="lastName">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Nom" : "Last Name")</label>
+                    <InputText id="lastName" @bind-Value="_registerModel.LastName" />
+                    <ValidationMessage For="@(() => _registerModel.LastName)" />
+                </div>
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <InputText id="username" @bind-Value="_registerModel.Username" />
+                    <ValidationMessage For="@(() => _registerModel.Username)" />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <InputText id="email" @bind-Value="_registerModel.Email" />
+                    <ValidationMessage For="@(() => _registerModel.Email)" />
+                </div>
+                <div class="form-group">
+                    <label for="teachingUnit">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "UE" : "Teaching Unit")</label>
+                    <InputText id="teachingUnit" @bind-Value="_registerModel.TeachingUnit" />
+                    <ValidationMessage For="@(() => _registerModel.TeachingUnit)" />
+                </div>
+                <div class="form-group">
+                    <label for="password">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Mot de passe" : "Password")</label>
+                    <InputText id="password" type="password" @bind-Value="_registerModel.Password" />
+                    <ValidationMessage For="@(() => _registerModel.Password)" />
+                </div>
+                <div class="form-group">
+                    <label for="phone">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Téléphone" : "Phone")</label>
+                    <InputText id="phone" @bind-Value="_registerModel.PhoneNumber" />
+                    <ValidationMessage For="@(() => _registerModel.PhoneNumber)" />
+                </div>
+                <button type="submit" class="submit-btn">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "S'inscrire" : "Register")</button>
+                <div class="switch-form">
+                    <a href="#" @onclick="ShowLoginForm" @onclick:preventDefault>
+                        @(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Déjà inscrit ? Se connecter" : "Already registered? Login")
+                    </a>
+                </div>
+            </EditForm>
+        </div>
+    }
+    else
+    {
+        <div class="form-container">
+            <h2 class="form-title">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Réinitialisation du code" : "Reset Code")</h2>
+            <EditForm Model="@_resetModel" OnValidSubmit="HandleReset">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label for="resetEmail">Email</label>
+                    <InputText id="resetEmail" @bind-Value="_resetModel.Email" />
+                    <ValidationMessage For="@(() => _resetModel.Email)" />
+                </div>
+                @if (_showVerificationSection)
+                {
+                    <div class="form-group">
+                        <label for="verificationCode">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Code de vérification" : "Verification Code")</label>
+                        <InputText id="verificationCode" @bind-Value="_resetModel.VerificationCode" />
+                        <ValidationMessage For="@(() => _resetModel.VerificationCode)" />
+                        <small class="validation-message">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Entrez le code à 6 chiffres envoyé à votre email" : "Enter the 6-digit code sent to your email")</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Nouveau Mot de passe" : "New Password ")</label>
+                        <InputText id="newPassword" @bind-Value="_resetModel.NewPassword" />
+                        <ValidationMessage For="@(() => _resetModel.NewPassword)" />
+                    </div>
+                }
+                <button type="submit" class="submit-btn">
+                    @(_showVerificationSection ? 
+                        (LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Valider" : "Validate") : 
+                        (LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Envoyer le code de vérification" : "Send verification code"))
+                </button>
+                <div class="switch-form">
+                    <a href="#" @onclick="ShowLoginForm" @onclick:preventDefault>
+                        @(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Retour à la connexion" : "Back to login")
+                    </a>
+                </div>
+            </EditForm>
+        </div>
+    }
+</div>
+
+@code {
+    private string _currentForm = "login";
+    private bool _showVerificationSection;
+    private TeacherLoginModel _loginModel = new();
+    private TeacherRegisterModel _registerModel = new();
+    private TeacherResetModel _resetModel = new();
+
+    protected override void OnInitialized()
+    {
+        LanguageService.CurrentCulture = new CultureInfo("fr-FR");
+        LanguageService.LanguageChanged += StateHasChanged;
+    }
+
+    private void ShowLoginForm()
+    {
+        _currentForm = "login";
+        _showVerificationSection = false;
+    }
+
+    private void ShowRegisterForm()
+    {
+        _currentForm = "register";
+    }
+
+    private void ShowResetForm()
+    {
+        _currentForm = "reset";
+        _showVerificationSection = false;
+        _resetModel = new TeacherResetModel();
+    }
+
+    private async Task HandleLogin()
+    {
+       bool isAuthenticated = await AuthenticateUser(_loginModel.Username, _loginModel.Password);
+        
+        if (isAuthenticated)
+        {
+            NavigationManager.NavigateTo("/DeliberationModif"); // Rediriger vers une page de succès
+        }
+    }
+
+    private async Task HandleRegister()
+    {
+        bool isRegistered = await RegisterUser("on",_registerModel.FirstName, _registerModel.LastName, _registerModel.Email,_registerModel.TeachingUnit, _registerModel.Username, _registerModel.Password,"Professeur", _registerModel.PhoneNumber);
+        if(isRegistered){
+            NavigationManager.NavigateTo("/Connexion");
+        }
+    }
+
+    private async Task<bool> RegisterUser(string enable_u, string prenom, string nom, string email, string ue ,string nom_utilisateur, string motdepasse, string role, string numero_tel)
+    {
+        string connexionInfo = "server=localhost;database=bonita;user=root;password='';";
+        bool inscrit = false;
+        using (MySqlConnection conn = new MySqlConnection(connexionInfo))
+        {
+            conn.Open();
+            string commandText = @"START TRANSACTION;
+                INSERT INTO users (enable_u, firstname, lastname, password_u, username, role, createby, creationdate, lastupdate)
+                VALUES (@enable_u, @prenom, @nom, @motdepasse, @nom_utilisateur, @role, @nom, NOW(), NOW());
+
+                INSERT INTO ue (Intitule, Annee) 
+                VALUES (@ue, DATE(NOW()));
+
+                INSERT INTO professeur (user_id, nom_p, email_p, numero_tel, idue)
+                VALUES (
+                    (SELECT id FROM users WHERE username=@nom_utilisateur),
+                    @nom,
+                    @email,
+                    @numero_tel,
+                    (SELECT idue FROM ue WHERE Intitule=@ue)
+                );
+                COMMIT;";
+            
+                using (MySqlCommand command = new MySqlCommand(commandText, conn))
+                {
+                    command.Parameters.AddWithValue("@enable_u", enable_u);
+                    command.Parameters.AddWithValue("@prenom", prenom);
+                    command.Parameters.AddWithValue("@nom", nom);
+                    command.Parameters.AddWithValue("@email", email);
+                    command.Parameters.AddWithValue("@ue", ue);
+                    command.Parameters.AddWithValue("@nom_utilisateur", nom_utilisateur);
+                    command.Parameters.AddWithValue("@motdepasse", motdepasse);
+                    command.Parameters.AddWithValue("@role", role);
+                    command.Parameters.AddWithValue("@numero_tel", numero_tel);
+
+                    int reussite = await command.ExecuteNonQueryAsync();
+                    if (reussite > 0)
+                    {
+                        inscrit = true;
+                    }
+                }
+        }
+        return inscrit;
+    }
+    private async Task HandleReset()
+    {
+        if (!_showVerificationSection)
+        {
+            _showVerificationSection = true;
+        }
+        else
+        {
+            ShowLoginForm();
+        }
+    }
+
+    public void Dispose()
+    {
+        LanguageService.LanguageChanged -= StateHasChanged;
+    }
+    private async Task<bool> AuthenticateUser(string username, string password)
+    {
+        string connexionInfo = "server=localhost;database=bonita;user=root;password='';";
+        bool connecter = false;
+        using (MySqlConnection conn = new MySqlConnection(connexionInfo))
+        {
+            conn.Open();
+            string commandText = "SELECT username, password_u FROM users u, professeur p WHERE u.id = p.user_id and u.username = @username";
+            using (MySqlCommand command = new MySqlCommand(commandText, conn))
+            {
+                command.Parameters.AddWithValue("@username", username);
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if(password == reader["password_u"].ToString()){
+                            connecter = true;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return connecter;
+    }
+}
