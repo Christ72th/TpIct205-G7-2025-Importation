@@ -1,0 +1,188 @@
+@page "/Admin"
+@using System.ComponentModel.DataAnnotations
+@using Deliberation.Models
+@using Deliberation.Services
+@using Deliberation.Resources
+@using MySql.Data.MySqlClient
+@using System.Data
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Resource> L
+@inject LanguageService LanguageService
+@using System.Globalization
+
+
+
+<LanguageSwitch />
+
+<div class="container">
+    @if (_currentForm == "login")
+    {
+        <div class="form-container">
+            <h2 class="form-title">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Connexion Administrateur" : "Administrator Login")</h2>
+            <EditForm Model="@_loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label for="username">Nom d'utilisateur</label>
+                    <InputText id="username" @bind-Value="_loginModel.Username" />
+                    <ValidationMessage For="@(() => _loginModel.Username)" />
+                </div>
+                <div class="form-group">
+                    <label for="password">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Mot de passe" : "Password")</label>
+                    <InputText id="password" type="password" @bind-Value="_loginModel.Password" />
+                    <ValidationMessage For="@(() => _loginModel.Password)" />
+                </div>
+                <button type="submit" class="submit-btn">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Se connecter" : "Login")</button>
+                <div class="switch-form">
+                    <a href="#" @onclick="ShowResetForm" @onclick:preventDefault>
+                        @(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Code oublié ?" : "Forgot code?")
+                    </a>
+                </div>
+            </EditForm>
+        </div>
+    }
+    else
+    {
+        <div class="form-container">
+            <h2 class="form-title">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Réinitialisation du code" : "Reset Code")</h2>
+            <EditForm Model="@_resetModel" OnValidSubmit="HandleReset">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label for="resetEmail">Email</label>
+                    <InputText id="resetEmail" @bind-Value="_resetModel.Email" />
+                    <ValidationMessage For="@(() => _resetModel.Email)" />
+                </div>
+                @if (_showVerificationSection)
+                {
+                    <div class="form-group">
+                        <label for="verificationCode">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Code de vérification" : "Verification Code")</label>
+                        <InputText id="verificationCode" @bind-Value="_resetModel.VerificationCode" />
+                        <ValidationMessage For="@(() => _resetModel.VerificationCode)" />
+                        <small class="validation-message">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Entrez le code à 6 chiffres envoyé à votre email" : "Enter the 6-digit code sent to your email")</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Nouveau Mot de passe" : "New Password ")</label>
+                        <InputText id="newPassword" @bind-Value="_resetModel.NewPassword" />
+                        <ValidationMessage For="@(() => _resetModel.NewPassword)" />
+                    </div>
+                }
+                <button type="submit" class="submit-btn" @onclick="SendVerificationCode">
+                    @(_showVerificationSection ? 
+                        (LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Valider" : "Validate") : 
+                        (LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Envoyer le code de vérification" : "Send verification code"))
+                </button>
+                <div class="switch-form">
+                    <a href="#" @onclick="ShowLoginForm" @onclick:preventDefault>
+                        @(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Retour à la connexion" : "Back to login")
+                    </a>
+                </div>
+            </EditForm>
+        </div>
+    }
+</div>
+@code{
+    private string _currentForm = "login";
+    private bool _showVerificationSection;
+    private AdminLoginModel _loginModel = new();
+    private AdminResetModel _resetModel = new();
+
+    protected override void OnInitialized()
+    {
+        LanguageService.CurrentCulture = new CultureInfo("fr-FR");
+        LanguageService.LanguageChanged += StateHasChanged;
+    }
+
+    private void ShowLoginForm()
+    {
+        _currentForm = "login";
+        _showVerificationSection = false;
+    }
+
+    private void ShowRegisterForm()
+    {
+        _currentForm = "register";
+    }
+
+    private void ShowResetForm()
+    {
+        _currentForm = "reset";
+        _showVerificationSection = false;
+        _resetModel = new AdminResetModel();
+    }
+
+    private async Task HandleLogin()
+    {
+       bool isAuthenticated = await AuthenticateUser(_loginModel.Username, _loginModel.Password);
+        
+        if (isAuthenticated)
+        {
+            NavigationManager.NavigateTo("/DeliberationModifAdmin"); // Rediriger vers une page de succès
+        }
+    }
+    private async Task HandleReset()
+    {
+        if (!_showVerificationSection)
+        {
+            _showVerificationSection = true;
+        }
+        else
+        {
+            ShowLoginForm();
+        }
+    }
+
+    public void Dispose()
+    {
+        LanguageService.LanguageChanged -= StateHasChanged;
+    }
+    private async Task<bool> AuthenticateUser(string username, string password)
+    {
+        string connexionInfo = "server=localhost;database=bonita;user=root;password='';";
+        bool connecter = false;
+        using (MySqlConnection conn = new MySqlConnection(connexionInfo))
+        {
+            conn.Open();
+            string commandText = "SELECT username, password_u FROM users u, admin p WHERE u.id = p.user_id and u.username = @username";
+            using (MySqlCommand command = new MySqlCommand(commandText, conn))
+            {
+                command.Parameters.AddWithValue("@username", username);
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if(password == reader["password_u"].ToString()){
+                            connecter = true;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return connecter;
+    }
+
+    private string genererCodeVerification(){
+        int code;
+        string  Code;
+        Random random = new Random();
+        code = random.Next(0,999999);
+        Code=code.ToString("D6");
+        return Code;
+    }
+    private async Task SendVerificationCode()
+    {
+        if (!_showVerificationSection)
+        {
+            _showVerificationSection = true;
+            string verificationCode = genererCodeVerification();
+
+            string emailContent = $"Le code est : {verificationCode}";
+            string subject = "Code de vérification";
+            
+            //await EmailService.SendEmailAsync(_resetModel.Email, subject, emailContent);
+        }
+        else
+        {
+            ShowLoginForm();
+        }
+    }
+}

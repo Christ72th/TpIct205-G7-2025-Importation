@@ -1,0 +1,222 @@
+@page "/student"
+@using System.ComponentModel.DataAnnotations
+@using Deliberation.Models
+@using Deliberation.Services
+@using Deliberation.Resources
+@using MySql.Data.MySqlClient
+@using System.Data
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Resource> L
+@inject LanguageService LanguageService
+@using System.Globalization
+
+<LanguageSwitch />
+
+<div class="container">
+    @if (_showLoginForm)
+    {
+        <div class="form-container">
+            <h2 class="form-title">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Connexion Étudiant" : "Student Login")</h2>
+            <EditForm Model="@_loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label for="studentId">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Numéro de matricule" : "Registration Number")</label>
+                    <InputText id="studentId" @bind-Value="_loginModel.Matricule" />
+                    <ValidationMessage For="@(() => _loginModel.Matricule)" />
+                </div>
+                <button type="submit" class="submit-btn">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Se connecter" : "Login")</button>
+                <div class="switch-form">
+                    <a href="#" @onclick="ShowRegisterForm" @onclick:preventDefault>
+                        @(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Pas encore inscrit ? S'inscrire" : "Not registered yet? Sign up")
+                    </a>
+                </div>
+            </EditForm>
+        </div>
+    }
+    else
+    {
+        <div class="form-container">
+            <h2 class="form-title">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Inscription Étudiant" : "Student Registration")</h2>
+            <EditForm Model="@_registerModel" OnValidSubmit="HandleRegister">
+                <DataAnnotationsValidator />
+                <div class="form-group">
+                    <label for="firstName">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Prénom" : "First Name")</label>
+                    <InputText id="firstName" @bind-Value="_registerModel.FirstName" />
+                    <ValidationMessage For="@(() => _registerModel.FirstName)" />
+                </div>
+                <div class="form-group">
+                    <label for="lastName">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Nom" : "Last Name")</label>
+                    <InputText id="lastName" @bind-Value="_registerModel.LastName" />
+                    <ValidationMessage For="@(() => _registerModel.LastName)" />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <InputText id="email" @bind-Value="_registerModel.Email" />
+                    <ValidationMessage For="@(() => _registerModel.Email)" />
+                </div>
+                <div class="form-group">
+                    <label for="matricule">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Matricule" : "Registration Number")</label>
+                    <InputText id="matricule" @bind-Value="_registerModel.Matricule" />
+                    <ValidationMessage For="@(() => _registerModel.Matricule)" />
+                </div>
+                <div class="form-group" style="display : none">
+                    <label for="level">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Niveau" : "Level")</label>
+                    <InputSelect id="level" @bind-Value="_registerModel.Level">
+                        <option value="">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "--Sélectionner un niveau--" : "--Select a level--")</option>
+                        <option value="L1">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Licence 1" : "Bachelor 1")</option>
+                        <option value="L2">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Licence 2" : "Bachelor 2")</option>
+                        <option value="L3">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Licence 3" : "Bachelor 3")</option>
+                        <option value="M1">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Master 1" : "Master 1")</option>
+                        <option value="M2">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Master 2" : "Master 2")</option>
+                    </InputSelect>
+                    <ValidationMessage For="@(() => _registerModel.Level)" />
+                </div>
+                <div class="form-group">
+                    <label for="birthDate">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Date de naissance" : "Birth Date")</label>
+                    <InputDate id="birthDate" @bind-Value="_registerModel.BirthDate" />
+                    <ValidationMessage For="@(() => _registerModel.BirthDate)" />
+                </div>
+                <div class="form-group">
+                    <label for="phone">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Téléphone" : "Phone")</label>
+                    <InputText id="phone" @bind-Value="_registerModel.PhoneNumber" />
+                    <ValidationMessage For="@(() => _registerModel.PhoneNumber)" />
+                </div>
+                <div class="form-group">
+                    <label for="cityOfBirth">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Ville de Naissance" : "City Of Birth")</label>
+                    <InputText id="cityOfBirth" @bind-Value="_registerModel.CityOfBirth" />
+                    <ValidationMessage For="@(() => _registerModel.CityOfBirth)" />
+                </div>
+                <button type="submit" class="submit-btn">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "S'inscrire" : "Register")</button>
+                <div class="switch-form">
+                    <a href="#" @onclick="ShowLoginForm" @onclick:preventDefault>
+                        @(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Déjà inscrit ? Se connecter" : "Already registered? Login")
+                    </a>
+                </div>
+            </EditForm>
+        </div>
+    }
+</div>
+
+@code {
+    private bool _showLoginForm = true;
+    private StudentLoginModel _loginModel = new();
+    private StudentRegisterModel _registerModel = new();
+
+    protected override void OnInitialized()
+    {
+        LanguageService.CurrentCulture = new CultureInfo("fr-FR");
+        LanguageService.LanguageChanged += StateHasChanged;
+    }
+
+    private void ShowLoginForm()
+    {
+        _showLoginForm = true;
+    }
+
+    private void ShowRegisterForm()
+    {
+        _showLoginForm = false;
+    }
+
+    private  async Task HandleLogin()
+    {
+       bool isAuthenticated = await AuthenticateUser(_loginModel.Matricule);
+        
+        if (isAuthenticated)
+        {
+            NavigationManager.NavigateTo("/DeliberationPV"); // Rediriger vers une page de succès
+        }
+    }
+
+
+    private async Task HandleRegister()
+    {
+        //bool isRegistered = await RegisterUser("on",_registerModel.FirstName, _registerModel.LastName, _registerModel.Email,_registerModel.CityOfBirth, _registerModel.BirthDate, _registerModel.Matricule, "Etudiant", _registerModel.PhoneNumber);
+        if(true){
+            NavigationManager.NavigateTo("/Connexion");
+        }
+        else{
+            Console.WriteLine("Erreur");
+        }
+    }private async Task<bool> RegisterUser(string enable_u, string prenom, string nom, string email, string villeNaissance, DateTime dateNaissance, string matricule, string role, string numero_tel)
+    {
+        string connexionInfo = "server=localhost;database=bonita;user=root;password='';";
+        bool inscrit = false;
+
+        try
+        {
+            using (MySqlConnection conn = new MySqlConnection(connexionInfo))
+            {
+                await conn.OpenAsync();
+                string commandText = @"
+                    START TRANSACTION;
+                    INSERT INTO users (enable_u, firstname, lastname, username, role, createby, creationdate, lastupdate)
+                    VALUES (@enable_u, @prenom, @nom, @matricule, @role, @nom, NOW(), NOW());
+                    INSERT INTO etudiant (id, Matricule, nom, prenom, email, dateNaissance, numero, villeNaissance)
+                    VALUES (
+                        (SELECT id FROM users WHERE username=@matricule),
+                        @matricule,
+                        @prenom,
+                        @nom,
+                        @email,
+                        @dateNaissance,
+                        @numero_tel,
+                        @villeNaissance
+                    );
+                    COMMIT;";
+
+                using (MySqlCommand command = new MySqlCommand(commandText, conn))
+                {
+                    command.Parameters.AddWithValue("@enable_u", enable_u);
+                    command.Parameters.AddWithValue("@prenom", prenom);
+                    command.Parameters.AddWithValue("@nom", nom);
+                    command.Parameters.AddWithValue("@email", email);
+                    command.Parameters.AddWithValue("@matricule", matricule);
+                    command.Parameters.AddWithValue("@role", role);
+                    command.Parameters.AddWithValue("@dateNaissance", dateNaissance);
+                    command.Parameters.AddWithValue("@villeNaissance", villeNaissance);
+                    command.Parameters.AddWithValue("@numero_tel", numero_tel);
+                    
+                    await command.ExecuteNonQueryAsync();
+                    inscrit = true;
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors de l'enregistrement : {ex.Message}");
+        }
+        return inscrit;
+    }
+
+    public void Dispose()
+    {
+        LanguageService.LanguageChanged -= StateHasChanged;
+    }
+
+    private async Task<bool> AuthenticateUser(string matricule)
+    {
+        string connexionInfo = "server=localhost;database=bonita;user=root;password='';";
+        bool connecter = false;
+        using (MySqlConnection conn = new MySqlConnection(connexionInfo))
+        {
+            conn.Open();
+            string commandText = "SELECT username, matricule FROM users u, etudiant e WHERE u.id = e.id AND e.matricule=@matricule;";
+            using (MySqlCommand command = new MySqlCommand(commandText, conn))
+            {
+                command.Parameters.AddWithValue("@matricule", matricule);
+                using (MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if(reader["matricule"].ToString() == reader["username"].ToString()){
+                            connecter = true;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return connecter;
+    }
+}

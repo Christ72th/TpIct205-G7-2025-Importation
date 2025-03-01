@@ -1,0 +1,42 @@
+@page "/"
+@using Deliberation.Resources
+@using System.Globalization
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<Resource> L
+@inject LanguageService LanguageService
+
+<LanguageSwitch />
+
+<div class="container">
+    <h1 class="main-title">@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Portail de Délibération" : "Deliberation Portal")</h1>
+    
+    <div class="cards-container">
+        <a href="/teacher" class="card">
+            <h2>@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Enseignant" : "Teacher")</h2>
+            <p>@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Espace réservé aux enseignants" : "Teacher's area")</p>
+        </a>
+        
+        <a href="/student" class="card">
+            <h2>@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Étudiant" : "Student")</h2>
+            <p>@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Espace réservé aux étudiants" : "Student's area")</p>
+        </a>
+        
+        <a href="/admin" class="card">
+            <h2>@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Administrateur" : "Administrator")</h2>
+            <p>@(LanguageService.CurrentCulture.Name.StartsWith("fr") ? "Espace réservé aux administrateurs" : "Administrator's area")</p>
+        </a>
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        LanguageService.CurrentCulture = new CultureInfo("fr-FR");
+        LanguageService.LanguageChanged += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        LanguageService.LanguageChanged -= StateHasChanged;
+    }
+}
