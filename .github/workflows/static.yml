@@ -27,8 +27,15 @@ jobs:
     - name: Publish project
       run: dotnet publish -c Release -o build
 
+    - name: Configure Git
+      run: |
+        git config --global user.email "christianeyebe72@gmail.com"
+        git config --global user.name "christ72th"
+
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
         publish_dir: ./build/wwwroot
+        cname: https://christ72th.github.io/TpIct205-G7-2025-Importation/
