@@ -1,34 +1,30 @@
-name: Build and Deploy Blazor App
+ name: Deploy to GitHub Pages
 
-on:
-  push:
-    branches:
-      - main
+   on:
+     push:
+       branches:
+         - main
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+   jobs:
+     deploy:
+       runs-on: ubuntu-latest
+       steps:
+         - name: Checkout repository
+           uses: actions/checkout@v2
 
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+         - name: Set up Node.js (si nécessaire)
+           uses: actions/setup-node@v2
+           with:
+             node-version: '14'
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '8.0.x' # Spécifiez la version de .NET utilisée
+         - name: Install dependencies
+         run: npm install
 
-    - name: Restore dependencies
-      run: dotnet restore
+         - name: Build project (si nécessaire)
+           run: npm run build
 
-    - name: Build
-      run: dotnet build --configuration Release --no-restore
-
-    - name: Publish
-      run: dotnet publish -c Release -o build
-
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./build/wwwroot
+         - name: Deploy to GitHub Pages
+           uses: peaceiris/actions-gh-pages@v3
+           with:
+             github_token: ${{ secrets.GH_TOKEN }}
+             publish_dir: ./build  # Dossier à déployer sur GitHub Pages
